@@ -67,21 +67,33 @@ pnpm run dev
 }
 ```
 **Quick Start**
+```
 # Clone & install
-git clone <your-fork>
+git clone https://github.com/sidpan2011/agent-challenge.git
 cd agent-challenge
 pnpm install
-
-# (optional) customise env
-cp .env.example .env
-#   AQI_CAP=50      # WHO “Good” threshold
-#   PORT=8081
 
 # Run dev server
 pnpm run dev            # open http://localhost:8080
 
 # Curl demo (empty body → auto geo-detect)
 curl -X POST http://localhost:8080/api/v1/agents/airQualityAgent/run -d '{}'
+```
+**Environment variables**
+```
+AQI_CAP=50  # Alert when forecast AQI > this value
+```
+
+### Deploy on Nosana
+**Build & push Docker image**
+```
+docker build -t sidpan/agent-challenge:latest .
+docker push sidpan/agent-challenge:latest
+```
+### Why it matters
+- Works worldwide – free, no API keys.
+- Instant health insight – know when to avoid outdoor activity.
+- Tiny footprint – <200 LOC, single-stage Docker, runs on decentralised GPUs.
 
 ### Challenge Overview
 
