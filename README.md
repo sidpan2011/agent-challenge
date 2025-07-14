@@ -36,6 +36,53 @@ pnpm run dev
 
 ## Assignment
 
+### Air-Quality Sentry
+
+**Air-Quality Sentry** is a lightweight Mastra agent that keeps an eye on the air you breathe.
+
+1. **Fetches today's OpenAI spend** using the `fetch_usage` tool
+2. **Projects tomorrow's spend** using the `forecast_cost` tool with a micro GPU model
+3. **Checks against daily cap** (configurable via `SPEND_CAP_USD` environment variable)
+4. **Returns structured JSON** with status alerts:
+   - `{ "status": "OK", ... }` if spending is safe
+   - `{ "status": "ALERT", ... }` if approaching/exceeding limit
+
+**Features:**
+- Finds your location – calls geo-detect (IP lookup) if latitude/longitude aren’t supplied.
+- Gets live pollution data – fetch-air pulls PM2.5, PM10, O₃, NO₂ from the free Open-Meteo AQ API and converts each to the US-EPA AQI scale.
+- Forecasts 3 h ahead – forecast-aqi projects the worst pollutant (aqi_max) three hours into the future on GPU.
+- Checks against a safety cap (AQI_CAP, default 50).
+- Returns clean JSON – with an emoji icon and per-pollutant breakdown.
+
+**Sample response**
+```json
+{
+  "status": "ALERT",
+  "icon": "⚠️",
+  "aqi_max": 82,
+  "by_pollutant": { "pm25": 82, "pm10": 60, "o3": 41, "no2": 50 },
+  "forecast": 91,
+  "cap": 50,
+  "summary": "Unhealthy air expected—consider wearing a mask."
+}
+```
+**Quick Start**
+# Clone & install
+git clone <your-fork>
+cd agent-challenge
+pnpm install
+
+# (optional) customise env
+cp .env.example .env
+#   AQI_CAP=50      # WHO “Good” threshold
+#   PORT=8081
+
+# Run dev server
+pnpm run dev            # open http://localhost:8080
+
+# Curl demo (empty body → auto geo-detect)
+curl -X POST http://localhost:8080/api/v1/agents/airQualityAgent/run -d '{}'
+
 ### Challenge Overview
 
 Welcome to the Nosana AI Agent Hackathon! Your mission is to build and deploy an AI agent on Nosana.
